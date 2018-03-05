@@ -1,0 +1,5 @@
+As part of trialling some cheap switches, we want at least a method to 
+automatically download the current running config.
+
+This would allow version control and alerting on changes, as well as
+potentially allowing checks against templates.
