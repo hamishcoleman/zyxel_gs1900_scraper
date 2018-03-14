@@ -3,3 +3,10 @@ automatically download the current running config.
 
 This would allow version control and alerting on changes, as well as
 potentially allowing checks against templates.
+
+A way to upload single line changes would be nice, but the only option appears
+to be to send the whole file - which then causes the switch to reboot to load
+the config.
+
+Tested against
+    ZyxEL GS1900-24 with firmware 2.40(AAHL.0)C0
