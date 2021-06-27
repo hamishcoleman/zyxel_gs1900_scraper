@@ -67,18 +67,24 @@ sub main() {
     }
     die "bad result2" if ($result ne "OK");
 
-    # Try and get a session cookie
-    my $url3 = $option->{url} . '/cgi-bin/dispatcher.cgi?cmd=1';
-    $mech->get($url3);
-
+    # Did we get given an session cookie?
+    my $setcookie = $mech->res()->header('set-cookie');
     my $XSSID;
-    # so brittle,  much annoy
-    if ($mech->content() =~ m/^\s*setCookie\("XSSID", "(.*)"\);$/m) {
+    if ($setcookie =~ m/^HTTP_XSSID=([^;]+);/) {
         $XSSID=$1;
     } else {
-        die "could not find XSSID cookie";
+        # Try and get a session cookie
+        my $url3 = $option->{url} . '/cgi-bin/dispatcher.cgi?cmd=1';
+        $mech->get($url3);
+
+        # so brittle,  much annoy
+        if ($mech->content() =~ m/^\s*setCookie\("XSSID", "(.*)"\);$/m) {
+            $XSSID=$1;
+        } else {
+            die "could not find XSSID cookie";
+        }
+        $mech->add_header(Cookie => 'XSSID='.$XSSID);
     }
-    $mech->add_header(Cookie => 'XSSID='.$XSSID);
 
     # upmethod
     # 0 = tftp (needs tftp_srcip)
