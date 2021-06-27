@@ -50,7 +50,7 @@ sub main() {
         . 'login=1&'
         . 'username='.$option->{username}.'&'
         . 'password='.encode_password($option->{password}).'&'
-        . '&dummy='.time();
+        . 'dummy='.time();
     $mech->get($url1);
     my $result = $mech->content();
     die "bad result1" if ($result ne "\nAUTHING\n");
