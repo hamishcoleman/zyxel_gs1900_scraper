@@ -53,17 +53,19 @@ sub main() {
         . 'dummy='.time();
     $mech->get($url1);
     my $result = $mech->content();
-    die "bad result1" if ($result ne "\nAUTHING\n");
+    $result =~ s/\n//g; # some switch firmwares have different numbers of newlines
+    die "bad result1" if ($result ne "AUTHING");
 
     # Check how we went
     my $url2 = $option->{url} . '/cgi-bin/dispatcher.cgi?'
         . 'login_chk=1&'
         . 'dummy='.time();
-    while ($result eq "\nAUTHING\n") {
+    while ($result eq "AUTHING") {
         $mech->get($url2);
         $result = $mech->content();
+        $result =~ s/\n//g; # some switch firmwares have different numbers of newlines
     }
-    die "bad result2" if ($result ne "\nOK\n");
+    die "bad result2" if ($result ne "OK");
 
     # Try and get a session cookie
     my $url3 = $option->{url} . '/cgi-bin/dispatcher.cgi?cmd=1';
