@@ -17,6 +17,7 @@ $Data::Dumper::Quotekeys = 0;
 
 use HC::Common;
 use HC::CredentialStore;
+use HC::HackDB;
 
 use ZyxelScrape;
 
@@ -26,6 +27,28 @@ my @option_list = (
     "credfile=s",
     "debug!",
 );
+
+sub data2hackdb {
+    my $data = shift;
+    return undef if (!$data);
+
+    if (ref($data) eq 'HASH') {
+        # assume that hashes are simply unique arrays and the key has no meaning
+        my $newdata = qw();
+        @{$newdata} = values(%{$data});
+        $data = $newdata;
+    }
+
+    my $db = HC::HackDB->new();
+    for my $data_row (@{$data}) {
+        my $row = $db->empty_row();
+
+        $row->set_from_hash($data_row);
+        $db->add_row($row);
+    }
+    return $db;
+}
+
 
 sub cmd_todo {
     ...;
@@ -42,9 +65,19 @@ sub cmd_show_poe {
 sub cmd_show_poe_port {
     my $switch = shift;
 
+    my @fields;
+    push @fields, "Port";
+    push @fields, "State";
+    push @fields, "Consuming Power (mW)";
+    push @fields, "Max Power (mW)";
+
     my $result = $switch->show_poe_port();
 
-    return Dumper($result);
+    my $s = '';
+    my $hackdb = data2hackdb($result);
+    $s .= $hackdb->extract(@fields)->order_by('Port')->to_string_pretty();
+
+    return $s;
 }
 
 my $cmds = {

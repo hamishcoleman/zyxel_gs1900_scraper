@@ -200,12 +200,18 @@ sub show_poe_port {
                 '_tag', 'td',
                 'class', 'font-4'
             )) {
-            if ($index > 0) {
+            if ($index > 10) {
+                # avoid getting all the details with a nested top level row
+                delete $port->{Port};
+                last;
+            } elsif ($index > 0) {
                 $port->{$keys[$index-1]} = $item->as_trimmed_text();
             }
             $index++;
         }
-        $result->{$port->{Port}} = $port;
+        if (defined($port->{Port})) {
+            $result->{$port->{Port}} = $port;
+        }
     }
 
     return $result;
