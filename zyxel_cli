@@ -39,10 +39,22 @@ sub cmd_show_poe {
     return Dumper($result);
 }
 
+sub cmd_show_poe_port {
+    my $switch = shift;
+
+    my $result = $switch->show_poe_port();
+
+    return Dumper($result);
+}
+
 my $cmds = {
     'show_poe'   => {
         cmd  => \&cmd_show_poe,
         help => 'Show the current global PoE status',
+    },
+    'show_poe_port'   => {
+        cmd  => \&cmd_show_poe_port,
+        help => 'Show the current PoE status for each port',
     },
 };
 

@@ -176,4 +176,38 @@ sub show_poe {
 
     return $result;
 }
+
+sub show_poe_port {
+    my $self = shift;
+
+    $self->_dispatcher_get(773);
+    my $tree = $self->_last2tree();
+
+    my $result = {};
+
+    my @keys;
+    for my $item ($tree->look_down(
+            '_tag', 'td',
+            'class', 'font-3 word_normal'
+        )) {
+        push @keys, $item->as_trimmed_text();
+    }
+
+    for my $row ($tree->look_down('_tag', 'tr')) {
+        my $port = {};
+        my $index = 0;
+        for my $item ($row->look_down(
+                '_tag', 'td',
+                'class', 'font-4'
+            )) {
+            if ($index > 0) {
+                $port->{$keys[$index-1]} = $item->as_trimmed_text();
+            }
+            $index++;
+        }
+        $result->{$port->{Port}} = $port;
+    }
+
+    return $result;
+}
 1;
