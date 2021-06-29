@@ -1,0 +1,85 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+#
+# Manipulate Zyxel switch on the CLI via scraping the web pages
+#
+
+# allow the libs to be in the bin dir
+use FindBin;
+use lib "/home/hamish/s/bin/lib";
+use lib "$FindBin::RealBin/lib";
+
+use Data::Dumper;
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Quotekeys = 0;
+
+use HC::Common;
+use HC::CredentialStore;
+
+use ZyxelScrape;
+
+my $option = {
+};
+my @option_list = (
+    "credfile=s",
+    "debug!",
+);
+
+sub cmd_todo {
+    ...;
+}
+
+sub cmd_show_poe {
+    my $switch = shift;
+
+    my $result = $switch->show_poe();
+
+    return Dumper($result);
+}
+
+my $cmds = {
+    'show_poe'   => {
+        cmd  => \&cmd_show_poe,
+        help => 'Show the current global PoE status',
+    },
+};
+
+sub main() {
+    HC::Common::do_options($option,@option_list);
+    if (defined($option->{help})) {
+        print("Sub commands:\n\n");
+        for my $cmd (sort(keys(%{$cmds}))) {
+            printf("%-18s %s\n",$cmd,$cmds->{$cmd}{help});
+        }
+        return;
+    }
+
+    my $creds = HC::CredentialStore->new($option->{credfile});
+
+    my $hostname = shift(@ARGV);
+    die "Need Zyxel hostname" if (!defined($hostname));
+
+    my ($username,$password) = $creds->lookup($hostname);
+
+    die "Need username credentials" if (!defined($username));
+    die "Need password credentials" if (!defined($password));
+
+    my $switch = ZyxelScrape->new();
+    if ($option->{debug}) {
+        $switch->debug();
+    }
+
+    $switch->set_hostname($hostname);
+    $switch->set_credentials($username, $password);
+
+    my $cmd = shift(@ARGV);
+    if (!defined($cmd) || !defined($cmds->{$cmd})) {
+        die('No such sub-command');
+    }
+
+    my $result = $cmds->{$cmd}{'cmd'}($switch,@ARGV);;
+    print($result);
+}
+main();
