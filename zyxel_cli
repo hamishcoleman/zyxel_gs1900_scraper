@@ -49,11 +49,12 @@ sub cmd_show_poe {
 sub cmd_show_poe_port {
     my $switch = shift;
 
-    my @fields;
-    push @fields, "Port";
-    push @fields, "State";
-    push @fields, "Consuming Power (mW)";
-    push @fields, "Max Power (mW)";
+    my @fields = qw(
+        port
+        state
+        consumed_mW
+        max_mW
+    );
 
     my $result = $switch->show_poe_port();
 
@@ -61,7 +62,7 @@ sub cmd_show_poe_port {
     my $hackdb = HC::HackDB->new();
     $hackdb->add_rows_hash($result);
 
-    $s .= $hackdb->extract(@fields)->order_by('Port')->to_string_pretty();
+    $s .= $hackdb->extract(@fields)->order_by('port')->to_string_pretty();
 
     return $s;
 }

@@ -150,6 +150,25 @@ sub _last2tree {
     return $tree;
 }
 
+my $_map_fields = {
+    # show_poe
+    'PoE Mode' => 'poe_mode',
+    'Total Power(W)' => 'total_W',
+    'Consuming Power(W)' => 'consumed_W',
+    'Allocated Power(W)' => 'allocate_W',
+    'Remaining Power(W)' => 'remain_W',
+
+    # show_poe_port
+    'Port' => 'port',
+    'State' => 'state',
+    'Class' => 'class',
+    'PD Priority' => 'pri',
+    'Power-Up' => 'proto',
+    'Wide Range Detection' => 'wide',
+    'Consuming Power (mW)' => 'consumed_mW',
+    'Max Power (mW)' => 'max_mW',
+};
+
 sub show_poe {
     my $self = shift;
 
@@ -171,6 +190,9 @@ sub show_poe {
             'class', 'font-4'
         )) {
         my $key = shift(@keys);
+        if (defined($_map_fields->{$key})) {
+            $key = $_map_fields->{$key};
+        }
         $result->{$key} = $item->as_trimmed_text();
     }
 
@@ -202,15 +224,19 @@ sub show_poe_port {
             )) {
             if ($index > 10) {
                 # avoid getting all the details with a nested top level row
-                delete $port->{Port};
+                delete $port->{port};
                 last;
             } elsif ($index > 0) {
-                $port->{$keys[$index-1]} = $item->as_trimmed_text();
+                my $key = $keys[$index-1];
+                if (defined($_map_fields->{$key})) {
+                    $key = $_map_fields->{$key};
+                }
+                $port->{$key} = $item->as_trimmed_text();
             }
             $index++;
         }
-        if (defined($port->{Port})) {
-            $result->{$port->{Port}} = $port;
+        if (defined($port->{port})) {
+            $result->{$port->{port}} = $port;
         }
     }
 
