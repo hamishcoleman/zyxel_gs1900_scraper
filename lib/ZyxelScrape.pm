@@ -128,9 +128,16 @@ sub login {
 
 sub _dispatcher_get {
     my $self = shift;
-    my $cmd = shift;
+    my %param = (
+        @_
+    );
+    my @param;
+    while (my ($k, $v) = each %param) {
+        push @param, $k . '=' . $v;
+    }
+    my $param = join('&', @param);
 
-    my $url = $self->{baseurl} . '/cgi-bin/dispatcher.cgi?cmd=' . $cmd;
+    my $url = $self->{baseurl} . '/cgi-bin/dispatcher.cgi?' . $param;
 
     $self->login();
     $self->{mech}->get($url);
@@ -172,7 +179,7 @@ my $_map_fields = {
 sub show_poe {
     my $self = shift;
 
-    $self->_dispatcher_get(776);
+    $self->_dispatcher_get(cmd=>776);
     my $tree = $self->_last2tree();
 
     my $result = {};
@@ -202,7 +209,7 @@ sub show_poe {
 sub show_poe_port {
     my $self = shift;
 
-    $self->_dispatcher_get(773);
+    $self->_dispatcher_get(cmd=>773);
     my $tree = $self->_last2tree();
 
     my $result = {};
@@ -250,7 +257,7 @@ sub set_poe_port_power {
 
     my $mech = $self->{mech};
 
-    $self->_dispatcher_get(774);
+    $self->_dispatcher_get(cmd=>774);
 
     $mech->field('portlist',$port);
     $mech->field('state',$state);
