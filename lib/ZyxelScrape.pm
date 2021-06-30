@@ -257,16 +257,14 @@ sub set_poe_port_power {
 
     my $mech = $self->{mech};
 
-    $self->_dispatcher_get(cmd=>774);
+    $self->_dispatcher_get(cmd=>774, port=>$port);
 
-    $mech->field('portlist',$port);
     $mech->field('state',$state);
     $mech->submit();
 
     # TODO
     # - check for success/fail
-    # - use a dispatcher_get with the correct port to populate the form with
-    #   the current values
     return $mech->content();
 }
+
 1;
