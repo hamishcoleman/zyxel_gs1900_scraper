@@ -67,6 +67,15 @@ sub cmd_show_poe_port {
     return $s;
 }
 
+sub cmd_set_poe_port_power {
+    my $switch = shift;
+    my $port = shift;
+    my $state = shift;
+
+    my $result = $switch->set_poe_port_power($port, $state);
+    return $result;
+}
+
 my $cmds = {
     'show_poe'   => {
         cmd  => \&cmd_show_poe,
@@ -75,6 +84,10 @@ my $cmds = {
     'show_poe_port'   => {
         cmd  => \&cmd_show_poe_port,
         help => 'Show the current PoE status for each port',
+    },
+    'set_poe_port_power'   => {
+        cmd  => \&cmd_set_poe_port_power,
+        help => 'Set the PoE Power enable for a port',
     },
 };
 

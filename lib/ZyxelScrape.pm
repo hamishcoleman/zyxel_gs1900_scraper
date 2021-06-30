@@ -242,4 +242,24 @@ sub show_poe_port {
 
     return $result;
 }
+
+sub set_poe_port_power {
+    my $self = shift;
+    my $port = shift;
+    my $state = shift;
+
+    my $mech = $self->{mech};
+
+    $self->_dispatcher_get(774);
+
+    $mech->field('portlist',$port);
+    $mech->field('state',$state);
+    $mech->submit();
+
+    # TODO
+    # - check for success/fail
+    # - use a dispatcher_get with the correct port to populate the form with
+    #   the current values
+    return $mech->content();
+}
 1;
