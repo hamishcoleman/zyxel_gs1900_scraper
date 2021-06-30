@@ -100,11 +100,6 @@ sub main() {
     $switch->set_credentials($username, $password);
 
     my $cmd = shift(@ARGV);
-    if (!defined($cmd) || !defined($cmds->{$cmd})) {
-        die('No such sub-command');
-    }
-
-    my $result = $cmds->{$cmd}{'cmd'}($switch,@ARGV);;
-    print($result);
+    print(HC::Common::subcommand($cmds, $cmd, $switch));
 }
 main();
