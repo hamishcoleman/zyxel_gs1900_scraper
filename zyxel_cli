@@ -79,13 +79,7 @@ my $cmds = {
 
 sub main() {
     HC::Common::do_options($option,@option_list);
-    if (defined($option->{help})) {
-        print("Sub commands:\n\n");
-        for my $cmd (sort(keys(%{$cmds}))) {
-            printf("%-18s %s\n",$cmd,$cmds->{$cmd}{help});
-        }
-        return;
-    }
+    HC::Common::subcommand_help($option, $cmds) && return;
 
     my $creds = HC::CredentialStore->new($option->{credfile});
 
