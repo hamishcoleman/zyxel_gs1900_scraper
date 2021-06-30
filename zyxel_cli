@@ -28,28 +28,6 @@ my @option_list = (
     "debug!",
 );
 
-sub data2hackdb {
-    my $data = shift;
-    return undef if (!$data);
-
-    if (ref($data) eq 'HASH') {
-        # assume that hashes are simply unique arrays and the key has no meaning
-        my $newdata = qw();
-        @{$newdata} = values(%{$data});
-        $data = $newdata;
-    }
-
-    my $db = HC::HackDB->new();
-    for my $data_row (@{$data}) {
-        my $row = $db->empty_row();
-
-        $row->set_from_hash($data_row);
-        $db->add_row($row);
-    }
-    return $db;
-}
-
-
 sub cmd_todo {
     ...;
 }
@@ -59,7 +37,13 @@ sub cmd_show_poe {
 
     my $result = $switch->show_poe();
 
-    return Dumper($result);
+    my $hackdb = HC::HackDB->new();
+    $hackdb->add_row_hash($result);
+
+    my $s = '';
+    $s .= $hackdb->to_string_pretty();
+
+    return $s;
 }
 
 sub cmd_show_poe_port {
@@ -74,7 +58,9 @@ sub cmd_show_poe_port {
     my $result = $switch->show_poe_port();
 
     my $s = '';
-    my $hackdb = data2hackdb($result);
+    my $hackdb = HC::HackDB->new();
+    $hackdb->add_rows_hash($result);
+
     $s .= $hackdb->extract(@fields)->order_by('Port')->to_string_pretty();
 
     return $s;
