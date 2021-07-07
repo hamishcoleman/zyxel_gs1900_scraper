@@ -74,8 +74,7 @@ sub _alwayslogin {
     my $url1 = $self->{baseurl} . '/cgi-bin/dispatcher.cgi?'
         . 'login=1&'
         . 'username='.$self->{username}.'&'
-        . 'password='._encode_password($self->{password}).'&'
-        . 'dummy='.time();
+        . 'password='._encode_password($self->{password});
     $mech->get($url1);
 
     my $result = $mech->content();
@@ -84,8 +83,7 @@ sub _alwayslogin {
 
     # Check how we went
     my $url2 = $self->{baseurl} . '/cgi-bin/dispatcher.cgi?'
-        . 'login_chk=1&'
-        . 'dummy='.time();
+        . 'login_chk=1';
     while ($result eq "AUTHING") {
         $mech->get($url2);
 
