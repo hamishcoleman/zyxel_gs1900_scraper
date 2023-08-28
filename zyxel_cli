@@ -38,6 +38,13 @@ sub cmd_show_poe {
     my $result = $switch->show_poe();
 
     my $hackdb = HC::HackDB->new();
+    $hackdb->add_column_name(qw(
+        poe_mode
+        total_W
+        consumed_W
+        allocate_W
+        remain_W
+    ));
     $hackdb->add_row_hash($result);
 
     my $s = '';
